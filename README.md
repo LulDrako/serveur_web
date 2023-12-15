@@ -23,6 +23,12 @@ Informations sur la façon de contribuer au projet.
 Ce projet est sous licence MIT.
 
 
+
+
+
+
+
+
 # todoList
 
 Ce projet est une application web de gestion de tâches développée avec [technologies utilisées, ex: Node.js, Express, MongoDB, etc.].
