@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>TODO List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            padding: 10px;
+            margin-right: 5px;
+            width: 200px;
+            border: 1px solid #ddd;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #4cae4c;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            background-color: white;
+            padding: 10px;
+            margin-bottom: 5px;
+            border-radius: 3px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        button {
+            padding: 5px 10px;
+            margin-left: 5px;
+            border: none;
+            border-radius: 3px;
+        }
+        .complete-button {
+            background-color: #5bc0de;
+            color: white;
+        }
+        .delete-button {
+            background-color: #d9534f;
+            color: white;
+        }
+        .complete-button:hover {
+            background-color: #31b0d5;
+        }
+        .delete-button:hover {
+            background-color: #c9302c;
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchTasks();
+
+            document.getElementById('addTaskForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                const description = document.getElementById('newTask').value;
+                addTask(description);
+            });
+        });
+
+        function fetchTasks() {
+            fetch('/tasks')
+                .then(response => response.json())
+                .then(tasks => {
+                    const tasksList = document.getElementById('tasksList');
+                    tasksList.innerHTML = '';
+                    tasks.forEach(task => {
+                        const taskItem = document.createElement('li');
+                        taskItem.textContent = task.description + ' - ' + (task.is_completed ? 'Complétée' : 'En cours');
+                        
+                        // Bouton pour marquer la tâche comme complétée
+                        const completeButton = document.createElement('button');
+                        completeButton.textContent = 'Compléter';
+                        completeButton.onclick = () => completeTask(task._id);
+                        taskItem.appendChild(completeButton);
+                        
+                        // Bouton pour supprimer la tâche
+                        const deleteButton = document.createElement('button');
+                        deleteButton.textContent = 'Supprimer';
+                        deleteButton.onclick = () => deleteTask(task._id);
+                        taskItem.appendChild(deleteButton);
+
+                        tasksList.appendChild(taskItem);
+                    });
+                });
+        }
+
+        function addTask(description) {
+            fetch('/tasks', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ description })
+            })
+            .then(() => {
+                fetchTasks(); // Recharger la liste des tâches après ajout
+                document.getElementById('newTask').value = ''; // Réinitialiser le champ de saisie
+            });
+        }
+
+        function completeTask(id) {
+            fetch(`/tasks/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ is_completed: true })
+            })
+            .then(() => {
+                fetchTasks(); // Recharger la liste des tâches après modification
+            });
+        }
+
+        function deleteTask(id) {
+            fetch(`/tasks/${id}`, {
+                method: 'DELETE'
+            })
+            .then(() => {
+                fetchTasks(); // Recharger la liste des tâches après suppression
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1>Gestionnaire de tâches TODO</h1>
+    <form id="addTaskForm">
+        <input type="text" id="newTask" placeholder="Ajouter une nouvelle tâche" required>
+        <button type="submit">Ajouter</button>
+    </form>
+
+    <ul id="tasksList">
+        <!-- Les tâches seront insérées ici -->
+    </ul>
+</body>
+</html>

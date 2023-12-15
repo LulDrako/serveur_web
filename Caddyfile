@@ -2,3 +2,13 @@ portfolio.exemple.localhost {
     root * "C:\Dev\ServeurWeb\serveur_web"
     file_server browse
 }
+
+todo.exemple.localhost {
+  reverse_proxy localhost:4000 :4001 :4002
+  encode gzip
+  tls internal
+   @staticAssets {
+        path *.css *.js *.png *.jpg *.jpeg *.gif *.webp *.svg *.woff *.woff2 *.eot *.ttf *.otf
+    }
+    header @staticAssets Cache-Control "public, max-age=604800, must-revalidate"
+}
