@@ -1,0 +1,4 @@
+portfolio.exemple.localhost {
+    root * "C:\Dev\ServeurWeb\serveur_web"
+    file_server browse
+}
